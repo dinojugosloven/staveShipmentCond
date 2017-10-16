@@ -29,18 +29,19 @@ void setup() {
       if (c == 0x71) // WHO_AM_I should always be 0x68
   {
     SerialPort.println("MPU9250 is online...");
-    
+   mpu.setSensors(INV_XYZ_ACCEL);
+   mpu.setAccelFSR(2);
+   mpu.setSampleRate(200);
+   
     unsigned short rate = mpu.getSampleRate();
     SerialPort.println("Sample rate obtained: ");
     SerialPort.println(rate);
 
+    unsigned short regByte;
+    mpu_read_reg(CONFIG, &regByte);
     
   }
-  
-   mpu.setSensors(INV_XYZ_ACCEL);
-   mpu.setAccelFSR(2);
-   mpu.setSampleRate(1000);
-   
+ 
 }
 
 void loop() {
