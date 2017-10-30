@@ -19,8 +19,8 @@ extern "C" {
 
 // global types & constants
 #define SD_LOG_WRITE_BUFFER_SIZE 64
-#define BUFFER_SIZE 16
-#define MAX_BUFFER_LENGTH 15
+#define BUFFER_SIZE 64
+#define MAX_BUFFER_LENGTH 63
 
 typedef int inv_error_t;
 #define INV_SUCCESS 0
