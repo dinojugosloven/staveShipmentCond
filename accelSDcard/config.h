@@ -7,6 +7,7 @@
 ////////////////////////
 // Serial Port Config //
 ////////////////////////
+#define com SerialUSB
 #define ENABLE_UART_LOGGING true
 // Select the Serial port to log to. Either SERIAL_PORT_USBVIRTUAL
 // or LOG_PORT SERIAL_PORT_HARDWARE (SerialUSB or Serial1)

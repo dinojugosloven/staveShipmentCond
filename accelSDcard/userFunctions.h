@@ -21,15 +21,16 @@ const unsigned long HoursInMicros = 3600000000;
 // Global variables
 //String measurement = "";
 struct Acceleration{
-  /* Raw data */
+  // Raw data
   unsigned long t;
   short ax;
   short ay;
   short az;
 };
 
-
 void readData(Acceleration*);
+void readData(unsigned char*);
 void printData(Acceleration*);
+void printData(unsigned char*);
 void printHeader(File);
 #endif // userFunctions_h

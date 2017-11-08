@@ -17,7 +17,7 @@ extern "C" {
 #include <MPU9250_RegisterMap.h>
 
 // Rename some typse
-#define com SerialUSB
+
 #define i2c_read arduino_i2c_read
 #define i2c_write arduino_i2c_write
 typedef int inv_error_t;
@@ -27,7 +27,7 @@ typedef int inv_error_t;
 
 // global variables
 Acceleration accelBuffer[BUFFER_SIZE];
-//char accelBuffer[BUFFER_SIZE];
+unsigned char binaryBuffer[10];
 File logFile;
 unsigned short _aSense;
 unsigned long MPUStartTime; // in millis
@@ -119,15 +119,10 @@ void loop() {
     //unsigned int statusReady = (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT));
     currentTime = micros();
     
-    readData(accelBuffer);
-
+    readData(binaryBuffer);
+    
     // Debug output to serial port
     com.print("Read Loop time "); com.println((micros()-currentTime));
-    String serialOutput = String(accelBuffer[0].t) + "," + 
-      String(accelBuffer[0].ax) + "," + 
-      String(accelBuffer[0].ay) + "," +
-      String(accelBuffer[0].az);
-    com.println(serialOutput);
 
   } // INT_STATUS ready
   else if(logFile.size() > (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
@@ -142,7 +137,7 @@ void loop() {
   }
   else if(dataPointer >= MAX_BUFFER_LENGTH){
         currentTime = micros();
-        printData(accelBuffer);
+        printData(binaryBuffer);
         com.print("Write Loop time "); com.println((micros()-currentTime));
   }
  /* else if ((currentTime - previousTime)>>10 >= HourInMillis) 

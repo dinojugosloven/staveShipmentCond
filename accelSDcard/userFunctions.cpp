@@ -34,22 +34,43 @@ void readData(Acceleration* rawData)
 
 }
 
+void readData(unsigned char* binaryData)
+{
+  //unsigned char tmp[6];
+  if (!i2c_read(MPU9250_ADDR, MPU9250_ACCEL_XOUT_H, 6, &binaryData[4]))
+  {
+    unsigned long timeMillis = currentTime>>10;
+    //for (int iByte = 0; iByte < 6; iByte++){
+      //binaryData[4+iByte] = tmp[iByte];
+    //}
+  }
+  dataPointer++;
+}
+void printData(unsigned char* binaryData){
+
+  logFile.write(binaryData, 10);
+
+  //Debug
+  short ax = (binaryData[4] << 8) | binaryData[5];
+  short ay = (binaryData[6] << 8) | binaryData[7];
+  short az = (binaryData[8] << 8) | binaryData[9];
+  String outputString = String(0) + "," + 
+      String(ax) + "," + 
+      String(ay) + "," +
+      String(az);
+  com.println(outputString);
+  //
+  
+  dataPointer = 0;
+}
+
 // Creating non-binary file
 // With String
 // or char[]
 // if too slow, use binary file
 void printData(Acceleration* rawData){
 
-    String serialOutput = String(rawData[0].t) + "," + 
-      String(rawData[0].ax) + "," + 
-      String(rawData[0].ay) + "," +
-      String(rawData[0].az);
-		//char dataStream[1*sizeof(Acceleration)];
-    
-    //size_t outputLength = serialOutput.length();
-		logFile.write(serialOutput.c_str(), serialOutput.length());
-   dataPointer = 0;
-        //logFile.flush(); // flushing every time?
+  
 }
 
 void printHeader(File logFile)
