@@ -1,6 +1,9 @@
 /** Dino Tahirovic, QMUL
  *  30/10/2017
  */
+
+#include "userFunctions.h"
+ 
 #include <SD.h>
 #include "config.h"
  
@@ -13,42 +16,24 @@ extern "C" {
 }
 #include <MPU9250_RegisterMap.h>
 
-
 // Rename some typse
 #define com SerialUSB
-#define timer micros
 #define i2c_read arduino_i2c_read
 #define i2c_write arduino_i2c_write
 typedef int inv_error_t;
 
-enum t_axisOrder {
-  X_AXIS, // 0
-  Y_AXIS, // 1
-  Z_AXIS  // 2
-};
-
 // SOME CONSTANTS
 #define SAMPLING_RATE 10
 
-// Global variables
-//String measurement = "";
-struct Acceleration{
-  /* Raw data */
-  short ax;
-  short ay;
-  short az;
-  /* time in ms from MPU9250 */
-  unsigned long t;};
+// global variables
 Acceleration accelBuffer[BUFFER_SIZE];
 //char accelBuffer[BUFFER_SIZE];
-
-unsigned short _aSense;
-
-unsigned long timeStamp, previousTime; // in micros
-unsigned long  hourScaler; // in milliseconds
-unsigned short dataPointer; // how large is short - 8 bits? only 256 then
-
 File logFile;
+unsigned short _aSense;
+unsigned long MPUStartTime; // in millis
+unsigned long currentTime; // in millis
+unsigned long previousTime; // in millis
+unsigned short dataPointer; // how large is short - 8 bits? only 256 then
 
 /////////////////////
 // SD Card Globals //
@@ -75,13 +60,14 @@ void setup() {
 
 // Initialize global vars
   dataPointer = 0;
-  previousTime = timeStamp = timer();
-  hourOffset = 0;
+  MPUStartTime = micros();
+  previousTime = currentTime = micros();
 
   // MPU::Begin
   inv_error_t result;
   struct int_param_s int_param;
   Wire.begin(); //communication between ARM Cortex and MPU9250
+  //Wire.setClock(400000);
   result = mpu_init(&int_param);
 
   if (result != INV_SUCCESS) fail();
@@ -128,59 +114,49 @@ void loop() {
   unsigned char intStatusReg;
   mpu_read_reg(MPU9250_INT_STATUS, &intStatusReg);
   
-  //unsigned long current = micros();
   if (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT))
   {
     //unsigned int statusReady = (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT));
+    currentTime = micros();
     
-    // read accel data directly from MPU9250 register
-    timeStamp = timer();
-    unsigned char tmp[6];
-    if (!i2c_read(MPU9250_ADDR, MPU9250_ACCEL_XOUT_H, 6, tmp))
-    {
-      // sprintf is too long, 800 us because of formating
-      //int writeStatus = sprintf(accelBuffer, "%lu, %hd, %hd, %hd \n", 
-        
-        accelBuffer.ax = (tmp[0] << 8) | tmp[1];
-        accelBuffer.ay = (tmp[2] << 8) | tmp[3];
-        accelBuffer.az = (tmp[4] << 8) | tmp[5]);
-        accelBuffer.t = hourScaler + timeStamp>>10, 
+    readData(accelBuffer);
 
-        // If the file will get too big with this new string, create
-        // a new one, and open it.
-        if (logFile.size() > (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
-        {
-          logFile.close();
-          logFileName = nextLogFile();
-          logFile = SD.open(logFileName, FILE_WRITE);
-        }
-        logFile.println(accelBuffer);
-        logFile.flush();
-    };
-    
-    com.print("Read Loop time "); com.println((timer()-timeStamp));
-    String serialOutput = String(accelBuffer.t) + String(accelBuffer.ax);
+    // Debug output to serial port
+    com.print("Read Loop time "); com.println((micros()-currentTime));
+    String serialOutput = String(accelBuffer[0].t) + "," + 
+      String(accelBuffer[0].ax) + "," + 
+      String(accelBuffer[0].ay) + "," +
+      String(accelBuffer[0].az);
     com.println(serialOutput);
-    /*{
-      accelBuffer[dataPointer].ax = (tmp[0] << 8) | tmp[1];
-      accelBuffer[dataPointer].ay = (tmp[2] << 8) | tmp[3];
-      accelBuffer[dataPointer].az = (tmp[4] << 8) | tmp[5];
-      accelBuffer[dataPointer].t = timeStamp;
-      dataPointer++;
-    }*/
+
   } // INT_STATUS ready
-  else if{
+  else if(logFile.size() > (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
+  {
+    
+    // If the file will get too big with this new string, create
+    // a new one, and open it.        
+    logFile.close();
+    logFileName = nextLogFile();
+    logFile = SD.open(logFileName, FILE_WRITE);
+        
+  }
+  else if(dataPointer >= MAX_BUFFER_LENGTH){
+        currentTime = micros();
+        printData(accelBuffer);
+        com.print("Write Loop time "); com.println((micros()-currentTime));
+  }
+ /* else if ((currentTime - previousTime)>>10 >= HourInMillis) 
+  {
     // check the status of timer. If it is larger then
     // 1 hour = 3,600,000,000 us
     // add hour millisecond offset and reset the timer
-    if (timeStamp > HourInMicros) {
-      hourScaler += 3600000;
-      timeStamp = 0;
-    }
-  }
+    
+      previousTime += currentTime;
+   
+  }*/
   
 
-  //com.print("Read/Write Loop time "); com.println(timer()-timeStamp);
+  //com.print("Read/Write Loop time "); com.println(timer()-currentTime);
 }
 
 bool initSD(void)

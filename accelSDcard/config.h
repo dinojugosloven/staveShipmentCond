@@ -1,3 +1,5 @@
+#ifndef config_h
+#define config_h
 // Default logging parameters
 #define ENABLE_TIME_LOG       true
 #define ENABLE_CALCULATED_LOG true
@@ -48,9 +50,10 @@
 #define i2c_write arduino_i2c_write
 
 // global types & constants
-#define BUFFER_SIZE 128
-#define MAX_BUFFER_LENGTH 64
+
+#define MAX_BUFFER_LENGTH 10
 
 
 #define INV_SUCCESS 0
 #define INV_ERROR 0x20
+#endif // config_h
