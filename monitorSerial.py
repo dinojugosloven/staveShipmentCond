@@ -33,9 +33,9 @@ print "Start Serial Monitor"
 print
 
 LOG_FILE_PREFIX = "data_"
-MAX_BUFFER_SIZE = 2048
+MAX_BUFFER_SIZE = 64
 MAX_FILE_LENGTH = 8000000
-COMPORT = "COM4"
+COMPORT = "COM6"
 BAUDRATE = 115200
 
 monitor()

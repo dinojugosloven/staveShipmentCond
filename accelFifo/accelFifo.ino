@@ -12,15 +12,16 @@ extern "C" {
 }
 #include <MPU9250_RegisterMap.h>
 
+#include "config.h"
+
 #define MPU9250_ADDR 0x68
 #define com SerialUSB
+#define timer micros
 #define i2c_read arduino_i2c_read
 #define i2c_write arduino_i2c_write
 
 // global types & constants
-#define SD_LOG_WRITE_BUFFER_SIZE 64
-#define BUFFER_SIZE 64
-#define MAX_BUFFER_LENGTH 63
+#define SAMPLING_RATE 1
 
 typedef int inv_error_t;
 #define INV_SUCCESS 0
@@ -43,8 +44,11 @@ struct Acceleration{
 Acceleration accelBuffer[BUFFER_SIZE];
 
 unsigned short _aSense;
+long aBias[3];
 
-unsigned long timeStamp, previousTime;
+unsigned long timeStamp, previousTime; // 64 bit
+unsigned long timeReadFifo;
+const unsigned long samplingPeriod = 1000.0/SAMPLING_RATE; // in ms 
 unsigned short dataPointer; // how large is short - 8 bits? only 256 then
 
 void fail(void)
@@ -53,6 +57,12 @@ void fail(void)
       com.println("Ctrl+Z should finish the program.");
       while(1);
     };
+
+void fifoError(int _fifoStatus)
+{
+  com.print("FIFO Error "); com.println(_fifoStatus);
+  if (_fifoStatus == FIFO_OVERFLOW) mpu_reset_fifo();
+}
     
 void setup() 
 {
@@ -60,7 +70,7 @@ void setup()
 
 // Initialize global vars
   dataPointer = 0;
-  previousTime = timeStamp = millis();
+  previousTime = timeStamp = timer();
 
   // MPU::Begin
   inv_error_t result;
@@ -74,13 +84,20 @@ void setup()
   // Init accelerometer
   mpu_set_bypass(1); // Place all slaves (including compass) on primary bus
   mpu_set_sensors(INV_XYZ_ACCEL | INV_XYZ_GYRO); // to keep PLL clock
-  mpu_set_sample_rate(10);
+  mpu_set_sample_rate(SAMPLING_RATE);
   // set and check full scale range
   mpu_set_accel_fsr(16);
   if (int st = mpu_get_accel_sens(&_aSense)) fail();
   // Set interrupt enable when raw data ready
   unsigned char bit1 = 0x1;
   i2c_write(MPU9250_ADDR, MPU9250_INT_ENABLE, 1, &bit1);
+  // reset fifo, enable overflow bit and configure to write accel data
+  mpu_configure_fifo(INV_XYZ_ACCEL);
+  //unsigned char tempBits;
+  //mpu_read_reg(MPU9250_INT_ENABLE, &tempBits);
+  //tempBits = tempBits | INT_ENABLE_FIFO_OVERFLOW_EN;
+  //i2c_write(MPU9250_ADDR, MPU9250_INT_ENABLE, 1, &tempBits);
+
   
   delay(2000);
 
@@ -116,6 +133,11 @@ void setup()
     microReg = MPU9250_ACCEL_CONFIG_2;
     mpu_read_reg(microReg, &registerByte);
     com.print(microReg,HEX);com.print("        ");com.println(registerByte,BIN);
+
+  // FIFO configuration
+    microReg = MPU9250_FIFO_EN;
+    mpu_read_reg(microReg, &registerByte);
+    com.print(microReg,HEX);com.print(" FIFO_EN?  ");com.println(registerByte>>3 & true,BIN);
   
     // I2C master clock frequency
     microReg = MPU9250_I2C_MST_CTRL;
@@ -123,6 +145,10 @@ void setup()
     com.print(microReg,HEX);com.print(" I2C MST CTRL ");com.println(registerByte,BIN);
     
     // Interrupt setting
+    microReg = MPU9250_INT_PIN_CFG;
+    mpu_read_reg(microReg, &registerByte);
+    com.print(microReg,HEX);com.print(" INT_CFG    ");com.println(registerByte,BIN);
+    
     microReg = MPU9250_INT_ENABLE;
     mpu_read_reg(microReg, &registerByte);
     com.print(microReg,HEX);com.print(" INT_EN    ");com.println(registerByte,BIN);
@@ -141,64 +167,92 @@ void setup()
     mpu_read_reg(microReg, &registerByte);
     com.print(microReg,HEX);com.print(" PWR_2     ");com.println(registerByte,BIN);
 
-    long aBias[3];
+
     mpu_read_6500_accel_bias(aBias);
     com.print("Accel offsets: aX "); com.print(aBias[0]);
     com.print(" aY "); com.print(aBias[1]);
     com.print(" aZ "); com.println(aBias[2]);
 
-    com.print(" Accel sensitivity "); com.println(_aSense);
+    com.print("Accel sensitivity "); com.println(_aSense);
+    com.print("Sampling period [ms] "); com.println(samplingPeriod); 
+
+    com.println(" ************************************************************** ");
   
   } // MPU9250 check loop
 
 }
-
+unsigned int counter=0;
+  unsigned char remaining=1;
 void loop() {
 
-  unsigned char intStatusReg;
-  mpu_read_reg(MPU9250_INT_STATUS, &intStatusReg);
-  unsigned long current = micros();
-  if (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT))
-  {
-    
-    // read accel data directly from MPU9250 register
-    short data[3];
-    timeStamp = millis();
-    unsigned char tmp[6];
-
-    if (!i2c_read(MPU9250_ADDR, MPU9250_ACCEL_XOUT_H, 6, tmp))
-    {
-      accelBuffer[dataPointer].ax = (tmp[0] << 8) | tmp[1];
-      accelBuffer[dataPointer].ay = (tmp[2] << 8) | tmp[3];
-      accelBuffer[dataPointer].az = (tmp[4] << 8) | tmp[5];
-      accelBuffer[dataPointer].t = timeStamp;
-      dataPointer++;
-    }
-     com.print("Read out [us]"); com.println(micros()-current);
-  } // INT_STATUS ready
-
+  // check if fifo overflowed
+  unsigned char tmp[6];
+  if (i2c_read(MPU9250_ADDR, MPU9250_INT_STATUS, 1, tmp)) fifoError(READ_ERROR);
+  if (tmp[0] >> INT_STATUS_FIFO_OVERFLOW_INT & true) fifoError(FIFO_OVERFLOW);
   
-  if (dataPointer == MAX_BUFFER_LENGTH) {
+  if(fifoCounter() >= 12) // 2 readings of accel, 10*6 bytes 
+  {
+    //check if it is now data; this clears the interrupt
+    timeReadFifo = timer();
+    //com.println(timeReadFifo);
+    //check that new data is available
+    mpu_read_reg(MPU9250_INT_STATUS, tmp);
+    if (tmp[0] & true) {
+      do {
+        int fifoStatus=mpu_read_fifo_stream(6, tmp, &remaining);
+        com.print("Remaining "); com.println(remaining);
+        if (!remaining) break;
+        if (fifoStatus == INV_SUCCESS) 
+        {
+        accelBuffer[dataPointer].ax = (tmp[0] << 8) | tmp[1];
+        accelBuffer[dataPointer].ay = (tmp[2] << 8) | tmp[3];
+        accelBuffer[dataPointer].az = (tmp[4] << 8) | tmp[5];
+        accelBuffer[dataPointer].t = timeStamp;
+        dataPointer++;
+        }
+        else {
+          fifoError(fifoStatus);
+          com.println(counter);
+          counter++;
+        }
+      } while (remaining>0);
+    }
+    
+    timeStamp = timer();
+    //com.println(timeStamp);
+    timeReadFifo = timeStamp - timeReadFifo;
+
+  } // FIFO available
+  
+  if (dataPointer >= MAX_BUFFER_LENGTH) {
     //buffer full
     // Do not overload the USB port, print out every second
-    if ((timeStamp-previousTime) >> 10){
+    //if ((timeStamp-previousTime)>>20){
       for (int i=0; i<MAX_BUFFER_LENGTH; i++) {
         com.print(i);com.print(" ");
-        com.print(accelBuffer[i].ax/_aSense,DEC); com.print(" "); 
-        com.print(accelBuffer[i].ay/_aSense,DEC); com.print(" ");
-        com.print(accelBuffer[i].az/_aSense,DEC); com.print(" ");
-        com.print(accelBuffer[i].t); com.println(" ms");
+        com.print((accelBuffer[i].ax),DEC); com.print(" "); 
+        com.print((accelBuffer[i].ay),DEC); com.print(" ");
+        com.print((accelBuffer[i].az),DEC); com.print(" ");
+        com.print(accelBuffer[i].t); com.println(" us");
+        com.print("Time now ");com.println(timeStamp);
+        com.print("Reading of FIFO took ");com.println(timeReadFifo);
       }
       previousTime = timeStamp;
-    }
+    //}
     dataPointer = 0;
   }
   
-  /*
-  if (measurement.length() > SD_LOG_WRITE_BUFFER_SIZE){
-    com.print(measurement);
-    measurement="";
-  }*/
+
+}
+
+int fifoCounter(){
+  unsigned char fifoH, fifoL;
   
+  if (mpu_read_reg(MPU9250_FIFO_COUNTH, &fifoH) != INV_SUCCESS)
+    return 0;
+  if (mpu_read_reg(MPU9250_FIFO_COUNTL, &fifoL) != INV_SUCCESS)
+    return 0;
+  
+  return (fifoH << 8 ) | fifoL;
 }
 

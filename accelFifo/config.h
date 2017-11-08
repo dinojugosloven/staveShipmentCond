@@ -49,8 +49,10 @@
 
 // global types & constants
 #define BUFFER_SIZE 128
-#define MAX_BUFFER_LENGTH 64
+#define MAX_BUFFER_LENGTH 2
 
 
 #define INV_SUCCESS 0
 #define INV_ERROR 0x20
+#define READ_ERROR 0x1
+#define FIFO_OVERFLOW 0x2
