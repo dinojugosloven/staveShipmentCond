@@ -23,7 +23,7 @@ extern "C" {
 typedef int inv_error_t;
 
 // SOME CONSTANTS
-#define SAMPLING_RATE 10
+#define SAMPLING_RATE 1
 
 // global variables
 Acceleration accelBuffer[BUFFER_SIZE];

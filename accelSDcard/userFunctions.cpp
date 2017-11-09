@@ -40,9 +40,10 @@ void readData(unsigned char* binaryData)
   if (!i2c_read(MPU9250_ADDR, MPU9250_ACCEL_XOUT_H, 6, &binaryData[4]))
   {
     unsigned long timeMillis = currentTime>>10;
-    //for (int iByte = 0; iByte < 6; iByte++){
-      //binaryData[4+iByte] = tmp[iByte];
-    //}
+    binaryData[0] = (timeMillis >> 24) & 0xFF; // 31-24
+    binaryData[1] = (timeMillis >> 16) & 0xFF; // 23-16
+    binaryData[2] = (timeMillis >> 8) & 0xFF;  // 15-8
+    binaryData[3] = timeMillis & 0xFF;         //  7-0
   }
   dataPointer++;
 }
@@ -51,10 +52,14 @@ void printData(unsigned char* binaryData){
   logFile.write(binaryData, 10);
 
   //Debug
+  unsigned long time = binaryData[0]<<24;
+  time |= binaryData[1]<<16;
+  time |= binaryData[2]<<8;
+  time |= binaryData[3];
   short ax = (binaryData[4] << 8) | binaryData[5];
   short ay = (binaryData[6] << 8) | binaryData[7];
   short az = (binaryData[8] << 8) | binaryData[9];
-  String outputString = String(0) + "," + 
+  String outputString = String(time) + "," + 
       String(ax) + "," + 
       String(ay) + "," +
       String(az);
@@ -75,6 +80,6 @@ void printData(Acceleration* rawData){
 
 void printHeader(File logFile)
 {
-	logFile.println("t,ax,ay,az");
+	logFile.println("t,ax,ay,az : 4,2,2,2 B");
 	return;
 }
