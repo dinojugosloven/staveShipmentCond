@@ -1,13 +1,12 @@
 #ifndef userFunctions_h
 #define userFunctions_h
 /** User data types and functions
-  *
+  * 08/11/2017 Dino Tahirovic
   */
   
 // Prototypes
-#define BUFFER_SIZE 128
-
 #include "SD.h"
+#include "config.h"
 #include "Arduino.h"
 
 enum t_axisOrder {
@@ -18,19 +17,7 @@ enum t_axisOrder {
 
 const unsigned long HoursInMicros = 3600000000;
 
-// Global variables
-//String measurement = "";
-struct Acceleration{
-  // Raw data
-  unsigned long t;
-  short ax;
-  short ay;
-  short az;
-};
-
-void readData(Acceleration*);
 void readData(unsigned char*);
-void printData(Acceleration*);
-void printData(unsigned char*);
-void printHeader(File);
+void printData(unsigned char[BUFFER_SIZE][BINARY_STRING]);
+void printHeader(unsigned short);
 #endif // userFunctions_h

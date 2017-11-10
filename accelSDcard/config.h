@@ -20,7 +20,7 @@
 #define ENABLE_SD_LOGGING false // Default SD logging (can be changed via serial menu)
 #define LOG_FILE_INDEX_MAX 999 // Max number of "logXXX.txt" files
 #define LOG_FILE_PREFIX "log"  // Prefix name for log files
-#define LOG_FILE_SUFFIX "txt"  // Suffix name for log files
+#define LOG_FILE_SUFFIX "dat"  // Suffix name for log files
 #define SD_MAX_FILE_SIZE 8000000 // 8MB max file size, increment to next file before surpassing
 #define SD_LOG_WRITE_BUFFER_SIZE 64 // Experimentally tested to produce 100Hz logs
 
@@ -51,8 +51,9 @@
 #define i2c_write arduino_i2c_write
 
 // global types & constants
-
-#define MAX_BUFFER_LENGTH 10
+#define BUFFER_SIZE 12
+#define MAX_BUFFER_LENGTH 10 // before emptying the buffer
+#define BINARY_STRING 10 // size of one string containing time, ax, ay, az
 
 
 #define INV_SUCCESS 0

@@ -26,8 +26,7 @@ typedef int inv_error_t;
 #define SAMPLING_RATE 1
 
 // global variables
-Acceleration accelBuffer[BUFFER_SIZE];
-unsigned char binaryBuffer[10];
+unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING];
 File logFile;
 unsigned short _aSense;
 unsigned long MPUStartTime; // in millis
@@ -60,6 +59,11 @@ void setup() {
 
 // Initialize global vars
   dataPointer = 0;
+  if (BUFFER_SIZE <= MAX_BUFFER_LENGTH)
+  {
+    com.println("Please, increase buffer size.");
+    fail();
+  }
   MPUStartTime = micros();
   previousTime = currentTime = micros();
 
@@ -106,6 +110,7 @@ void setup() {
   }
     // Open the current file name:
   logFile = SD.open(logFileName, FILE_WRITE);
+  printHeader(_aSense);
 }
 
 void loop() {
@@ -119,7 +124,7 @@ void loop() {
     //unsigned int statusReady = (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT));
     currentTime = micros();
     
-    readData(binaryBuffer);
+    readData(binaryBuffer[dataPointer]);
     
     // Debug output to serial port
     com.print("Read Loop time "); com.println((micros()-currentTime));
@@ -166,40 +171,6 @@ bool initSD(void)
   
   com.println("SD card present.");
   return true;
-}
-
-// Log a string to the SD card
-bool sdLogString(Acceleration* toLog)
-{
-  // Open the current file name:
-  File logFile = SD.open(logFileName, FILE_WRITE);
-
-  // If the file will get too big with this new string, create
-  // a new one, and open it.
-  if (logFile.size() > (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
-  {
-    logFileName = nextLogFile();
-    logFile = SD.open(logFileName, FILE_WRITE);
-  }
-
-
-  // If the log file opened properly, add the string to it.
-  if (logFile)
-  {
-    for (int i=0; i<MAX_BUFFER_LENGTH; i++) {
-      logFile.print(i);logFile.print(" ");
-      logFile.print(toLog[i].t); logFile.print(", ");
-      logFile.print(toLog[i].ax/_aSense,DEC); logFile.print(", "); 
-      logFile.print(toLog[i].ay/_aSense,DEC); logFile.print(", ");
-      logFile.println(toLog[i].az/_aSense,DEC);
-    }
-
-    logFile.close();
-
-    return true; // Return success
-  }
-
-  return false; // Return fail
 }
 
 // Find the next available log file. Or return a null string

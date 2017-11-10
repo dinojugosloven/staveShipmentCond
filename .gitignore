@@ -1,2 +1,10 @@
 *.log
 *.dat
+staveMonitor/*
+*.d
+*.def
+*.dll
+*.exp
+*.lib
+*.rootmap
+RawData/*
