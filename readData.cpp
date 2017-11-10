@@ -24,7 +24,7 @@
 int readData(const string dataFile) {
 
 	//const char* dataFile_c = "2_Raw_Data/LOG2.TXT";
-	FILE* p_file = fopen(dataFile.c_str(), "br");
+	FILE* p_file = fopen(dataFile.c_str(), "r");
 	if (p_file == NULL) return(-1);
 	printf("File %s opened.\n", dataFile.c_str());
 
@@ -43,11 +43,12 @@ int readData(const string dataFile) {
 	fputs(headerString, p_outFile);
 
 	printf("Please wait...\n");
-	char binaryString[10];
+	//! Portability? I presume u char is = 1 byte
+	unsigned char binaryString[10];
 	while (!feof(p_file))
 	{
 		int nOfReads = fscanf(p_file, "%10c", binaryString);
-		printf("Number of reads: %d string: %s\n", nOfReads, binaryString);
+		//printf("Number of reads: %d string: %10c\n", nOfReads, binaryString);
 		if (nOfReads != 1) break;
 		unsigned long time = binaryString[0] << 24;
 		time |= binaryString[1] << 16;
