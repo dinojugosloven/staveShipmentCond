@@ -12,12 +12,13 @@ extern "C" {
 // Global vars defined in .ino file
 extern unsigned long currentTime; // in millis
 extern File logFile;
+extern bool sdCardPresent;
 extern unsigned short dataPointer;
 
 // implementations  
 int readData(unsigned char* binaryData)
 {
-  unsigned long timeMillis = millis();
+  unsigned long timeMillis = micros();
   binaryData[0] = (timeMillis >> 24) & 0xFF; // 31-24
   binaryData[1] = (timeMillis >> 16) & 0xFF; // 23-16
   binaryData[2] = (timeMillis >> 8) & 0xFF;  // 15-8
@@ -31,17 +32,30 @@ int readData(unsigned char* binaryData)
 
 void printData(unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING]){
 
-
-  for (unsigned int i=0; i<dataPointer; i++){
-    if (sdCardPresent){
-      logFile.write(binaryBuffer[i], 10);
-    } else {
-      
+    for (unsigned int i=0; i<dataPointer; i++){
+      if (sdCardPresent) {
+        logFile.write(binaryBuffer[i], 10);
+      } 
+      else {
+      unsigned long time = binaryBuffer[i][0]<<24;
+      time |= binaryBuffer[i][1]<<16;
+      time |= binaryBuffer[i][2]<<8;
+      time |= binaryBuffer[i][3];
+      short ax = (binaryBuffer[i][4] << 8) | binaryBuffer[i][5];
+      short ay = (binaryBuffer[i][6] << 8) | binaryBuffer[i][7];
+      short az = (binaryBuffer[i][8] << 8) | binaryBuffer[i][9];
+      String outputString = String(time) + "," + 
+        String(ax) + "," + 
+        String(ay) + "," +
+        String(az);
+      com.println(outputString);
+    
     }
     
   }
-  
-  logFile.flush(); 
+    logFile.flush();
+    com.println("SD flushed.");
+   
 }
 
 void printHeader(unsigned short _aSense)

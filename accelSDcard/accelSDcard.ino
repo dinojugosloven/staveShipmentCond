@@ -23,7 +23,7 @@ extern "C" {
 typedef int inv_error_t;
 
 // SOME CONSTANTS
-#define SAMPLING_RATE 5 // times per second
+#define SAMPLING_RATE 20 // times per second
 
 //! Data buffer, one write/flush cycle of SD card
 unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING];
@@ -81,7 +81,7 @@ void setup() {
   inv_error_t result;
   struct int_param_s int_param;
   Wire.begin(); //communication between ARM Cortex and MPU9250
-  //Wire.setClock(400000);
+  Wire.setClock(400000); // Much faster then default, reads 6 registers in 280 us
   result = mpu_init(&int_param);
 
   if (result != INV_SUCCESS) fail();
@@ -138,6 +138,7 @@ void loop() {
 
     // If the communication fails, the sensor will stop
     if (readData(binaryBuffer[dataPointer])) fail();
+    
     dataPointer++;
     
     // Debug output to serial port
@@ -155,9 +156,12 @@ void loop() {
         
   }
   else if(dataPointer >= MAX_BUFFER_LENGTH){
+        // Flush the buffer
         currentTime = micros();
         printData(binaryBuffer);
+        
         com.print("Write Loop time "); com.println((micros()-currentTime));
+        
         dataPointer = 0;
   }
   
