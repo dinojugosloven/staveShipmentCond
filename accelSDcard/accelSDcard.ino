@@ -25,14 +25,20 @@ typedef int inv_error_t;
 // SOME CONSTANTS
 #define SAMPLING_RATE 5 // times per second
 
-// global variables
+//! Data buffer, one write/flush cycle of SD card
 unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING];
+
+//! SD card file reference
 File logFile;
+
+//! Range divider needed to convert to g's
 unsigned short _aSense;
-unsigned long MPUStartTime; // in millis
-unsigned long currentTime; // in millis
-unsigned long previousTime; // in millis
-unsigned short dataPointer; // how large is short - 8 bits? only 256 then
+
+//! Time for timing check, not for data
+unsigned long currentTime;
+
+//! Current position in buffer
+short dataPointer;
 
 /////////////////////
 // SD Card Globals //
@@ -69,8 +75,7 @@ void setup() {
     com.println("Please, increase buffer size.");
     fail();
   }
-  MPUStartTime = micros();
-  previousTime = currentTime = micros();
+  currentTime = micros();
 
   // MPU::Begin
   inv_error_t result;
@@ -111,11 +116,13 @@ void setup() {
     sdCardPresent = true;
     // Get the next, available log file name
     logFileName = nextLogFile(); 
+
+    // Open the current file name:
+    logFile = SD.open(logFileName, FILE_WRITE);
+    printHeader(_aSense);
     
   }
-    // Open the current file name:
-  logFile = SD.open(logFileName, FILE_WRITE);
-  printHeader(_aSense);
+
 }
 
 void loop() {
@@ -153,15 +160,6 @@ void loop() {
         com.print("Write Loop time "); com.println((micros()-currentTime));
         dataPointer = 0;
   }
- /* else if ((currentTime - previousTime)>>10 >= HourInMillis) 
-  {
-    // check the status of timer. If it is larger then
-    // 1 hour = 3,600,000,000 us
-    // add hour millisecond offset and reset the timer
-    
-      previousTime += currentTime;
-   
-  }*/
   
 
   //com.print("Read/Write Loop time "); com.println(timer()-currentTime);

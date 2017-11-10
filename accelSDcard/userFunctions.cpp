@@ -31,8 +31,14 @@ int readData(unsigned char* binaryData)
 
 void printData(unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING]){
 
+
   for (unsigned int i=0; i<dataPointer; i++){
-    logFile.write(binaryBuffer[i], 10);
+    if (sdCardPresent){
+      logFile.write(binaryBuffer[i], 10);
+    } else {
+      
+    }
+    
   }
   
   logFile.flush(); 
