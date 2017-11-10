@@ -23,7 +23,7 @@ extern "C" {
 typedef int inv_error_t;
 
 // SOME CONSTANTS
-#define SAMPLING_RATE 1
+#define SAMPLING_RATE 5 // times per second
 
 // global variables
 unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING];
@@ -41,6 +41,11 @@ bool sdCardPresent = false; // Keeps track of if SD card is plugged in
 String logFileName; // Active logging file
 String logFileBuffer; // Buffer for logged data. Max is set in config
 
+/** Stop the sensor.
+ *  If there is any reason for malfunction, this method
+ *  will be called. It is an endless loop.
+ *  The blue LED will be ON.
+ */
 void fail(void)
     {
       // Blue led ON --> error
@@ -123,14 +128,16 @@ void loop() {
   {
     //unsigned int statusReady = (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT));
     currentTime = micros();
-    
-    readData(binaryBuffer[dataPointer]);
+
+    // If the communication fails, the sensor will stop
+    if (readData(binaryBuffer[dataPointer])) fail();
+    dataPointer++;
     
     // Debug output to serial port
     com.print("Read Loop time "); com.println((micros()-currentTime));
 
   } // INT_STATUS ready
-  else if(logFile.size() > (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
+  else if(logFile.size() >= (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
   {
     
     // If the file will get too big with this new string, create
@@ -144,6 +151,7 @@ void loop() {
         currentTime = micros();
         printData(binaryBuffer);
         com.print("Write Loop time "); com.println((micros()-currentTime));
+        dataPointer = 0;
   }
  /* else if ((currentTime - previousTime)>>10 >= HourInMillis) 
   {

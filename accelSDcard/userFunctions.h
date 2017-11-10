@@ -17,7 +17,7 @@ enum t_axisOrder {
 
 const unsigned long HoursInMicros = 3600000000;
 
-void readData(unsigned char*);
+int readData(unsigned char*);
 void printData(unsigned char[BUFFER_SIZE][BINARY_STRING]);
 void printHeader(unsigned short);
 #endif // userFunctions_h
