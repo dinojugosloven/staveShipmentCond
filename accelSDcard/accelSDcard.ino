@@ -35,7 +35,7 @@ File logFile;
 unsigned short _aSense;
 
 //! Time for timing check, not for data
-unsigned long currentTime;
+//unsigned long currentTime;
 
 //! Current position in buffer
 short dataPointer;
@@ -75,7 +75,7 @@ void setup() {
     com.println("Please, increase buffer size.");
     fail();
   }
-  currentTime = micros();
+  //currentTime = micros();
 
   // MPU::Begin
   inv_error_t result;
@@ -107,7 +107,7 @@ void setup() {
   com.print("MPU9520 Who am I returns 0x"); com.println(c, HEX);
 
   // Check the configuration and print values
-  if (c == 0x71) printConfiguration();// WHO_AM_I returns 0x71 for MPU9250
+  //if (c == 0x71) printConfiguration();// WHO_AM_I returns 0x71 for MPU9250
   
 
   // Check for the presence of an SD card, and initialize it:
@@ -134,7 +134,7 @@ void loop() {
   if (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT))
   {
     //unsigned int statusReady = (intStatusReg & (1<<INT_STATUS_RAW_DATA_RDY_INT));
-    currentTime = micros();
+    //currentTime = micros();
 
     // If the communication fails, the sensor will stop
     if (readData(binaryBuffer[dataPointer])) fail();
@@ -142,7 +142,7 @@ void loop() {
     dataPointer++;
     
     // Debug output to serial port
-    com.print("Read Loop time "); com.println((micros()-currentTime));
+    //com.print("Read Loop time "); com.println((micros()-currentTime));
 
   } // INT_STATUS ready
   else if(logFile.size() >= (SD_MAX_FILE_SIZE - MAX_BUFFER_LENGTH))
@@ -157,10 +157,10 @@ void loop() {
   }
   else if(dataPointer >= MAX_BUFFER_LENGTH){
         // Flush the buffer
-        currentTime = micros();
+        //currentTime = micros();
         printData(binaryBuffer);
         
-        com.print("Write Loop time "); com.println((micros()-currentTime));
+        //com.print("Write Loop time "); com.println((micros()-currentTime));
         
         dataPointer = 0;
   }

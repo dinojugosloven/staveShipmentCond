@@ -51,7 +51,7 @@
 #define i2c_write arduino_i2c_write
 
 // global types & constants
-#define BUFFER_SIZE 256 // Max buffer 512 B before automatic SD card flush
+#define BUFFER_SIZE 256
 #define MAX_BUFFER_LENGTH 255 // before emptying the buffer x 10 B
 #define BINARY_STRING 10 // B, size of string containing time, ax, ay, az
 

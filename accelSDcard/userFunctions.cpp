@@ -10,7 +10,6 @@ extern "C" {
 }
 
 // Global vars defined in .ino file
-extern unsigned long currentTime; // in millis
 extern File logFile;
 extern bool sdCardPresent;
 extern unsigned short dataPointer;
@@ -18,11 +17,11 @@ extern unsigned short dataPointer;
 // implementations  
 int readData(unsigned char* binaryData)
 {
-  unsigned long timeMillis = micros();
-  binaryData[0] = (timeMillis >> 24) & 0xFF; // 31-24
-  binaryData[1] = (timeMillis >> 16) & 0xFF; // 23-16
-  binaryData[2] = (timeMillis >> 8) & 0xFF;  // 15-8
-  binaryData[3] = timeMillis & 0xFF;         //  7-0
+  unsigned long timeStamp = micros();
+  binaryData[0] = (timeStamp >> 24) & 0xFF; // 31-24
+  binaryData[1] = (timeStamp >> 16) & 0xFF; // 23-16
+  binaryData[2] = (timeStamp >> 8) & 0xFF;  // 15-8
+  binaryData[3] = timeStamp & 0xFF;         //  7-0
   
   if (i2c_read(MPU9250_ADDR, MPU9250_ACCEL_XOUT_H, 6, &binaryData[4]))
     return(-1);
@@ -53,8 +52,7 @@ void printData(unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING]){
     }
     
   }
-    logFile.flush();
-    com.println("SD flushed.");
+  if (sdCardPresent) logFile.flush();
    
 }
 
