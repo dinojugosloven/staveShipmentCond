@@ -23,7 +23,7 @@ extern "C" {
 typedef int inv_error_t;
 
 // SOME CONSTANTS
-#define SAMPLING_RATE 20 // times per second
+#define SAMPLING_RATE 1000 // times per second
 
 //! Data buffer, one write/flush cycle of SD card
 unsigned char binaryBuffer[BUFFER_SIZE][BINARY_STRING];
@@ -66,6 +66,7 @@ void setup() {
   com.begin(115200);
 
   // Blue led goes off if everything is OK
+  pinMode(HW_LED_PIN, OUTPUT);
   digitalWrite(HW_LED_PIN, false);
 
 // Initialize global vars

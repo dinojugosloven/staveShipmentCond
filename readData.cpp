@@ -17,11 +17,16 @@
 /*! \brief Read binary data output from SparkFun Razor
 *
 *  Should be called before the analysis file.
-*
+*  The first file after switch on will have a buffer line. 
+*  Later ones will start immediately with data.
 *  Fills root TTree and saves it to a file
 *  Replacing the .dat extension to .txt
+*
+*  \param dataFile \in path to raw file
+*  \param firstFile \in 
+*  \return 0 if OK, -1 if input file not found.
 */
-int readData(const string dataFile) {
+int readData(const string dataFile, const bool firstFile=true) {
 
 	//const char* dataFile_c = "2_Raw_Data/LOG2.TXT";
 	FILE* p_file = fopen(dataFile.c_str(), "rb");
@@ -38,9 +43,11 @@ int readData(const string dataFile) {
 
 	//! \TODO read the header and print it 
 	char headerString[128];
-	fgets(headerString, 128, p_file);
-	printf("Read buffer %s\n", headerString);
-	fputs(headerString, p_outFile);
+	if (firstFile) {
+		fgets(headerString, 128, p_file);
+		printf("Read buffer %s\n", headerString);
+		fputs(headerString, p_outFile);
+	}
 
 	printf("Please wait...\n");
 	//! Portability? I presume u char is = 1 byte
