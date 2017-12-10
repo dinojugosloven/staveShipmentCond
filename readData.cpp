@@ -43,8 +43,8 @@ int readData(const string dataFile, const bool firstFile=true) {
 
 	//! \TODO read the header and print it 
 	char headerString[128];
+	fgets(headerString, 128, p_file);
 	if (firstFile) {
-		fgets(headerString, 128, p_file);
 		printf("Read buffer %s\n", headerString);
 		fputs(headerString, p_outFile);
 	}
