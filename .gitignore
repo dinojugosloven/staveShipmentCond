@@ -1,5 +1,7 @@
 *.log
 *.dat
+*.gz
+*.aux
 staveMonitor/*
 *.d
 *.def
