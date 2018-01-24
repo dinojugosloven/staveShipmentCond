@@ -1,0 +1,116 @@
+2014-08-15 Ian Brock <Ian.Brock@cern.ch>
+	* Remove atlasnote.bst as a style. atlasBibStyleWithTitle and atlasBibStyleWoTitle should be used instead
+	* Start reorganising directory structure:
+	*	doc: documentation (instructions, atlasphysics and bibliography quick guide
+
+2014-08-15 Ian Brock <Ian.Brock@cern.ch>
+	* atlasnote.cls: add environment for list of contributers
+	
+2014-08-14 Ian Brock <Ian.Brock@cern.ch>
+	* tags 00-04-00, 00-04-01, 00-04-02, 00-04-03, 00-04-04 created from tarballs.
+	* Latest tarball merged with Feb. 2014 changes from Marco (hopefully)
+	
+2014-02-14 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Fixed problems with latest version of atlascover.sty
+	
+2012-04-12 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added version w/ copyright notice from PubCom wiki page
+	
+2009-05-19 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* atlasphysics.sty: changed NIM abbreviation
+	* tag atlasnote-00-03-06
+	
+2009-03-11 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Replaced mathptmx with amsmath and txfonts (allow both math symbols in title)
+	* tag atlasnote-00-03-05
+	
+2009-02-19 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added recommendation of mathscr.sty for luminosity symbol
+	* tag atlasnote-00-03-03
+	
+2009-01-21 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Updated AtlasExample plots
+	* tag atlasnote-00-03-02
+	
+2009-01-18 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* instruction.tex/pdf: added documentation for \skipbeforetitle{}
+	  command 
+	* atlasnote.cls: added command to reset page numbering
+	  after title page (still commented for the time being)
+	* Removed plots not fulfilling the ATLAS Style rules
+	* Improved Appendices section
+	* tag atlasnote-00-03-01
+	
+2009-12-11 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* atlascover.cls: added \skipbeforetitle{} command
+	
+2009-11-17 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added 'coverpage' option to load the atlascover.sty
+	  package at the proper place.
+	* tag atlasnote-00-03-00
+	
+2009-10-02 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Fixed conflict with tikz.sty (bug report from Alex Penson)
+	* tag atlasnote-00-02-10
+	
+2009-09-30 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Fixed AN_atlaslogo.eps and AN_cernlogo.eps to cope with MikTex dvips 
+	  problems on Windows
+	* tag atlasnote-00-02-09
+	
+2009-09-24 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Package moved from private SVN repository to PubCom SVN repo
+	* tag atlasnote-00-02-08
+	
+2009-09-22 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added description of authblk.sty in instruction.tex
+	* Removed TODO file
+	* tag atlasnote-00-02-07
+	
+2009-09-15 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added authblk package to handle multiple authors/affiliation
+	
+2009-09-08 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Restored section numbering
+	
+2009-08-13 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* atlasnote.cls: uses geometry.sty to redefine page size
+	* atlasnote.cls: dropped use of (deprecated) times.sty
+	* cvs tag atlasnote-00-02-05
+	
+2009-07-30 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Removed \atlasnote{} command, updated documentation accordingly
+	* Added comment lines to emptypaper.tex
+	* Class version 1.01
+	* cvs tag atlasnote-00-02-04
+	
+2009-06-09 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Added automatic support for lineno.sty (line numbers in draft mode)
+	* Better ATLAS and CERN logos (3cm width, 300dpi)
+	* cvs tag atlasnote-00-02-03
+	
+2009-06-08 Marco Delmastro <Marco.Delmastro@cern.ch>
+	* Started from existing templates, created standalone atlasnote.cls class
+	* Included code from drafthead.sty to generate draft heading
+	* Fixed instruction.tex and emptynote.tex to use new class
+	* Moved plots in figure/ subdirectory
+	* Added support for pdflatex (should work out of the box)
+	* Added README and TODO files
+	* First import to CVS
+	* cvs tag atlasnote-00-02-02
+	* Rewritten Latex section in instruction.tex Appendix
+	
+2006-11-30 Version 2.1 
+	- Bug in the use of icaption, now just use caption instead
+	- Wrong pdf in release, fixed.	
+
+2006-11-20 Version 2.0 
+	Differences with respect to 1.0:
+		- New example figure with subfigures
+		- Explanation of bibtex a bit expanded
+		- Significant changes in atlasphysics.sty:
+			- use of xspace.sty to get spacing right
+			- change of names of various commands in order to
+        		  minimize use of 1- and 2-letter commands
+			- some new commands
+	Please read the appendix of atlaspaper.tex to get a new list.

@@ -1,0 +1,46 @@
+\documentclass[]{article}
+
+\include{myarticle/myarticle.sty}
+
+%opening
+\title{Acceleration Measurement with SparkFun Razor}
+\author{Dino Tahirovic}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Introduction}
+Stave shipment.
+
+\section{System Description}
+
+\section{Data Acquisition}
+Currently, I use direct read from MPU registers. I save the raw data as 10 bytes into a buffer, and after 256 entries, the buffer is saved to the SD card. There is also a script readData.cpp that converts binary to human readable format, which can be further analysed (I use MATLAB).
+
+The improvement would be to use FIFO, so that there isn’t ~50 ms gap when the buffer is written to the SD card.
+
+\subsection{Code Installation}
+Please find the repository here:
+https://github.com/dinojugosloven/staveShipmentCond
+The code is in accelSDcard folder (other folders are just my training). After the installation of SparkFun libraries (as given on their site for Razor 14001), the Arduino file should compile.
+
+\subsection{Usage}
+
+\begin{enumerate}
+	\item Upload the accelSDcard Arduino code. That is the first step. I presume you have downloaded SparkFun and SD libraries for the Arduino and avr-gcc compiler, as advertised on SparkFun site.
+
+ \item Sensor sends data into the SD card and create a file in SD card to store raw data (real-time?) Correct.
+
+\item Convert data from binary to human readable format by running readData.cpp
+Correct.
+
+\item Analyze the converted data by MATLAB (Must date be converted? Can it be raw data? Do I need to write code in MATLAB? Is Excel okay to do the analysis?) Once you have the human readable data, it is up to you. Excel is good (ROOT too), I use Excel to preview the data for the correctness.
+\end{enumerate}
+
+
+\end{document}

@@ -1,0 +1,107 @@
+%-------------------------------------------------------------------------------
+% This file provides a skeleton ATLAS document
+%-------------------------------------------------------------------------------
+\documentclass{atlasnote} 
+% Options:
+%		nomaketitle Do not run \maketitle from the class
+%		coverpage	  Create ATLAS draft cover page for collaboration circulation
+%							  atlascover.sty must be in this directory or a system directory.
+%							  See coveronly.tex for a list of variables that should be defined.
+%							  Do not include the hyperref package in this file when you set coverpage.
+%		CONF			  This is a CONF note
+%		usetikz		  Load tikz package in the right place
+
+%-------------------------------------------------------------------------------
+% Extra packages:
+% See doc/atlasphyics.pdf for a list of the defined symbols
+%\usepackage{atlasphysics}
+% Comment out hyperref if you use coverpage
+%\usepackage[colorlinks,breaklinks,pdftitle={ATLAS draft},pdfauthor={The ATLAS Collaboration}]{hyperref}  
+%\hypersetup{linkcolor=blue,citecolor=blue,filecolor=black,urlcolor=blue} 
+
+%-------------------------------------------------------------------------------
+% Specify title, author, abstract and document numbers here
+
+% Title
+\title{A template for ATLAS documents}
+
+% Author --  Default is ``The ATLAS collaboration''
+%\author{The ATLAS Collaboration}
+
+% if multiple authors/affiliations are needed, use the authblk package
+\usepackage{authblk}
+\renewcommand\Authands{, } % avoid ``. and'' for last author
+\renewcommand\Affilfont{\itshape\small} % affiliation formatting
+
+\author[a]{First Author}
+\author[a]{Second Author}
+\author[b]{Third Author}
+
+\affil[a]{One Institution}
+\affil[b]{Another Institution}
+
+% Date: if not given, uses current date
+%\date{\today}
+
+% Draft version: if given, adds draft version on front page, a
+% 'DRAFT' box on top of each other page, and line numbers to easy
+% commenting. Comment or remove in final version.
+\draftversion{x.y}
+
+% Journal: adds a 
+\journal{Phys. Lett. B} 
+
+% Abstract
+\abstracttext{
+  This is the abstract
+}
+
+%-------------------------------------------------------------------------------
+% Content
+%-------------------------------------------------------------------------------
+\begin{document}
+
+%\maketitle
+
+% List of contributors to the analysis
+% The width of the name is an optional argument
+\begin{atlascontribute}
+\item[Student, Joe] fake background estimate in muon channel, MCFM
+  calculations of diboson background cross section limit calculation
+\item[Student, Jane] top-quark background estimate, final
+  analysis implementation
+\item[Postdoc, John] editor of internal note, fake background
+  estimate in the electron channel, cut optimisation studies
+\item[Postdoc, Jack] major contributions to nearly all aspects of
+  analysis, paper contact editor
+\item[Professor, Joan] supervised student and postdoc of Institute 1,
+  contributions to top-quark background estimate.
+\item[Researcher, Joanne] implementation of muon calibration and systematics
+\end{atlascontribute}
+\clearpage
+
+% Test of tikz.sty loading in atlasnote.cls. Use 'usetikz' option in documentclass declaration
+%\input{tikz-test}
+
+%-------------------------------------------------------------------------------
+\section{Introduction}
+\label{sec:intro}
+%-------------------------------------------------------------------------------
+
+Place your introduction here
+
+%-------------------------------------------------------------------------------
+\section{Results}
+\label{sec:result}
+%-------------------------------------------------------------------------------
+
+Place your results here
+
+%-------------------------------------------------------------------------------
+\section{Conclusion}
+\label{sec:conclusion}
+%-------------------------------------------------------------------------------
+
+Place your conclusion here
+
+\end{document}

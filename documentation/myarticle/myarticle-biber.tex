@@ -1,0 +1,39 @@
+\ProvidesPackage{myarticle-biber}
+
+\usepackage{babel}
+\usepackage[utf8]{inputenc} 
+\usepackage{amsfonts}
+\usepackage[T1]{fontenc}
+%\usepackage[pdftex]{graphicx}
+%\bibliographystyle{apsrevENG}
+%\biboptions{sort&compress}
+%\bibliographystyle{elsarticle-num}
+\usepackage[pdftex]{hyperref}
+\usepackage{epstopdf}
+\usepackage{url} 
+\usepackage{nicefrac}
+\usepackage{csquotes}
+%\usepackage{cite}
+\usepackage[backend=biber, sorting=ydnt, maxnames=20]{biblatex}
+
+
+% My packages 
+\usepackage{subfig}
+\usepackage{caption}
+\usepackage{amsmath} 
+\usepackage{amssymb} 
+\usepackage[super]{nth}
+\usepackage{lineno}
+
+\newcommand{\dd}{\mathop{}\,\mathrm{d}}
+% new command for slanted fractions, instead of slash
+\newcommand*\rfrac[2]{{}^{#1}\!/_{#2}}
+\newcommand{\infinity}{\infty}
+
+%\def\bi#1{\hbox{\boldmath{$#1$}}} \let\oldvec\vec
+%\def\vec#1{\mbox{\boldmath$#1$}} \def\pol{{\textstyle{1\over2}}}
+%\def\svec#1{\mbox{{\scriptsize \boldmath$#1$}}}
+
+
+%\modulolinenumbers[5]
+\endinput

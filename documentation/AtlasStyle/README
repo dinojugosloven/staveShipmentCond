@@ -1,0 +1,46 @@
+------------------------------------------------------------------------------
+A LaTeX template class to typeset ATLAS notes and papers
+See ChangeLog or SVN log for history of changes.
+
+Responsible: Ian Brock (Ian.Brock@cern.ch)
+------------------------------------------------------------------------------
+$Id: README 301568 2014-08-15 15:05:46Z brock $
+$HeadURL: svn+ssh://svn.cern.ch/reps/atlasgroups/pubcom/latex/atlasnote/tags/atlasnote-00-04-07/README $
+------------------------------------------------------------------------------
+
+Some guidelines can be found in instructions.pdf. You can produce
+yourself the document (and thus test that your LaTeX setup is working)
+by doing:
+  cd doc
+  pdflatex instructions
+  bibtex   instructions
+  pdflatex instructions
+  pdflatex instructions
+
+or
+  cd doc
+  latex instructions
+  bibtex instructions
+  latex instructions
+  latex instructions
+  dvipdf instructions
+
+Or you could simply type 'cd doc; make instructions' :-)
+
+The following other documents exist:
+	doc/atlasphysics.pdf : Symbols defined in atlasphysics.sty
+	doc/bibtex_guide.pdf : Short guide to BibTeX in ATLAS
+	
+Other additional files that could be useful:
+	atlasphysics.sty: it contains some useful newcommands and definitions;
+	emptynote.tex:    it contains the minimal setup to start typing your
+                      document using atlasnote.cls class. Customize it at you own needs.
+
+Enjoy and send commments, suggestion and bugs to the responsible.
+
+Notes:
+2014-08-15: The ATLAS LaTeX templates are currently in the process of being harmonised and
+			improved. If you find any problems, or features that used to there that have
+			disappeared please contact me. Let me know of any errors in the documentation
+			as well.
+
