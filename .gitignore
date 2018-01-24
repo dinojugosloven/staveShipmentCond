@@ -2,6 +2,7 @@
 *.dat
 *.gz
 *.aux
+*.pdf
 staveMonitor/*
 *.d
 *.def
